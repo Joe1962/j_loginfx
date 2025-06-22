@@ -1,0 +1,187 @@
+package cu.jsoft.j_loginfx;
+
+import static cu.jsoft.j_dbfxlite.DBNotifications.NotifyErrorDB;
+import cu.jsoft.j_loginfx.global.CONSTS;
+import cu.jsoft.j_loginfx.users.RS_users;
+import cu.jsoft.j_loginfx.users.TYP_user;
+import cu.jsoft.j_utilsfxlite.security.types.TYP_ParamDLG_Login;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+
+public class LoginController {
+	ArrayList<TYP_ParamDLG_Login> lstUsers = new ArrayList<>();
+	Dialog dialog;
+
+	@FXML
+	private Label lblTitle;
+	@FXML
+	private ComboBox<String> userComboBox;
+	@FXML
+	private PasswordField passwordField;
+	@FXML
+	private Label errorLabel;
+
+	public void initialize() throws IOException {
+		String LastUser = "";
+		String VersionString = "";
+
+		// Check for existing user names in DB table sys_users:
+		if (countUsers() == 0) {
+			return;
+		}
+
+		// There are users, continuing on to login dialog:
+
+		// Get list of user names:
+		setUserList(loadUsers());
+
+		// Set focus on password field:
+		Platform.runLater(() -> passwordField.requestFocus());
+	}
+
+	public void setDialog(Dialog MyDialog) {
+		dialog = MyDialog;
+		final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+		btOk.addEventFilter(ActionEvent.ACTION, event -> {
+			if (!handleLogin()) {
+				event.consume();
+			}
+		});
+	}
+
+	public void setTitle(String thetitle) {
+		lblTitle.setText(thetitle);
+	}
+
+	private int countUsers() {
+		// Count user names from DB table sys_users:
+		RS_users MyRSUsers = new RS_users();
+		int MyUserCount = 0;
+		try {
+			MyUserCount = MyRSUsers.CountUsers();
+		} catch (SQLException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+		}
+		return MyUserCount;
+	}
+
+	private ArrayList<TYP_ParamDLG_Login> loadUsers() {
+		TYP_user MyRow = new TYP_user();
+		RS_users MyRSUsers = new RS_users();
+
+		// Query DB for list of user names:
+		try {
+			MyRSUsers.selectAll(" ORDER BY name ");
+		} catch (SQLException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+			NotifyErrorDB(ex.getMessage());
+			// TODO: do sommink here...!!!
+		}
+
+		try {
+			MyRow = MyRSUsers.getCurrent();
+		} catch (SQLException ex) {
+			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+		}
+
+		// Collect user names in a list:
+		while (MyRow != null) {
+			lstUsers.add(new TYP_ParamDLG_Login(MyRow.getName(), MyRow.isAdmin(), MyRow.getPassword()));
+			try {
+				boolean tmpBool = MyRSUsers.goNext();
+				MyRow = MyRSUsers.getCurrent();
+			} catch (SQLException ex) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+
+		return lstUsers;
+	}
+
+	private void setUserList(ArrayList<TYP_ParamDLG_Login> lstUsers) {
+		// TODO: Populate user list from lstUsers:
+		for (TYP_ParamDLG_Login lstUser : lstUsers) {
+			userComboBox.getItems().add(lstUser.getName());
+		}
+		// TODO: Select last logged-on user instead of first...???:
+		userComboBox.getSelectionModel().selectFirst();
+	}
+
+	public String getSelectedUser() {
+		return userComboBox.getSelectionModel().getSelectedItem();
+	}
+
+	public String getPassword() {
+		return passwordField.getText();
+	}
+
+	private boolean handleLogin() {
+		String user = userComboBox.getValue();
+		String password = passwordField.getText();
+
+		if (user == null || password.isEmpty()) {
+			showError("Seleccione un usuario e introduzca la contraseña...");
+			return false;
+		}
+
+		if (doValidate()) {
+			System.out.println("Login exitoso para: " + user);
+			return true;
+		} else {
+			showError("Contraseña inválida para: " + user);
+			passwordField.clear();
+			// Set focus on password field:
+			passwordField.requestFocus();
+			return false;
+		}
+	}
+
+	private boolean doValidate() {
+		SUB_Protect Protection = new SUB_Protect();
+		String userName = userComboBox.getValue();
+		String userPass = passwordField.getText();
+
+		int index = getArrayListIndexByname(lstUsers, userName);
+			if (index < 0) {
+				// We're fscked...
+			}
+			boolean isAdmin = lstUsers.get(index).isAdmin();
+	
+			// This password comes encrypted:
+			String pass = lstUsers.get(index).getPassword();
+
+			//Encrypt typed password to compare with encrypted one from DB:
+			String myEncString = Protection.getEncryptedString(userPass, new StringBuffer(CONSTS.AESSalt).reverse().toString(), new StringBuffer(CONSTS.SecKeyStr).reverse().toString(), CONSTS.iv);
+			//String MyDecString = Protection.getDecryptedString(sPass, new StringBuffer(CONSTS.SecKeyStr).reverse().toString(), CONSTS.iv);
+
+			return ((myEncString.equals(pass)));
+	}
+
+	private int  getArrayListIndexByname(ArrayList<TYP_ParamDLG_Login> lstCashiers, String MyName) {
+		for (int i = 0; i < lstCashiers.size(); i++) {
+			if (lstCashiers.get(i).getName().equals(MyName)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private void showError(String message) {
+		// TODO: Implement a timer to clear this:
+		errorLabel.setText(message);
+		errorLabel.setVisible(true);
+	}
+
+}
