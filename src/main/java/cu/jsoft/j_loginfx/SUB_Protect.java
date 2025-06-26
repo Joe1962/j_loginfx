@@ -3,6 +3,9 @@
  */
 package cu.jsoft.j_loginfx;
 
+import static cu.jsoft.j_dbfxlite.DBActions.DBStructCheck;
+import cu.jsoft.j_dbfxlite.DBConnectionHandler;
+import cu.jsoft.j_dbfxlite.types.TYP_DBStructCheck;
 import cu.jsoft.j_loginfx.global.FLAGS;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
@@ -12,6 +15,7 @@ import cu.jsoft.j_utilsfxlite.security.types.TYP_AES_Utils;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +29,7 @@ import javafx.stage.Stage;
  * @author joe1962
  */
 public class SUB_Protect {
+	ArrayList<String> FailList = new ArrayList<>();
 
 	public SUB_Protect() {
 	}
@@ -128,6 +133,55 @@ public class SUB_Protect {
 		}
 
 		return true;
+	}
+
+	public ArrayList<String> checkUsersTable(String theDB) throws SQLException {
+		DBConnectionHandler dbConn = new DBConnectionHandler();
+
+		if (dbConn.isTable(theDB, "public", "sys_users")) {
+			FailList.add("La tabla " + theDB + "no existe");
+		} else {
+			FailList = DBStructCheck(theDB, "public", "sys_users", getDBStruct(), false);
+		}
+
+		return FailList;
+	}
+
+	private static ArrayList<TYP_DBStructCheck> getDBStruct() {
+		TYP_DBStructCheck DBStructParams = new TYP_DBStructCheck();
+		ArrayList<TYP_DBStructCheck> DBStruct = new ArrayList();
+
+		DBStructParams.setColumn_name("uuid");
+		DBStructParams.setColumn_default("uuid_generate_v4()");
+		DBStructParams.setIs_nullable("NO");
+		DBStructParams.setData_type("uuid");
+		DBStructParams.setCharacter_maximum_length(0);
+		DBStruct.add(DBStructParams);
+
+		DBStructParams = new TYP_DBStructCheck();
+		DBStructParams.setColumn_name("name");
+		DBStructParams.setColumn_default(null);
+		DBStructParams.setIs_nullable("NO");
+		DBStructParams.setData_type("character varying");
+		DBStructParams.setCharacter_maximum_length(64);
+		DBStruct.add(DBStructParams);
+
+		DBStructParams = new TYP_DBStructCheck();
+		DBStructParams.setColumn_name("password");
+		DBStructParams.setColumn_default(null);
+		DBStructParams.setIs_nullable("NO");
+		DBStructParams.setData_type("character varying");
+		DBStructParams.setCharacter_maximum_length(64);
+		DBStruct.add(DBStructParams);
+
+		DBStructParams.setColumn_name("admin");
+		DBStructParams.setColumn_default("false");
+		DBStructParams.setIs_nullable("NO");
+		DBStructParams.setData_type("boolean");
+		DBStructParams.setCharacter_maximum_length(0);
+		DBStruct.add(DBStructParams);
+
+		return DBStruct;
 	}
 
 }
