@@ -4,8 +4,6 @@
  */
 package cu.jsoft.j_loginfx.users;
 
-import cu.jsoft.j_dbfxlite.DBActions;
-import static cu.jsoft.j_dbfxlite.DBActions.doUpdate;
 import cu.jsoft.j_dbfxlite.RS;
 import cu.jsoft.j_utilsfxlite.global.FLAGS;
 import cu.jsoft.j_utilsfxlite.security.SUB_Protect;
@@ -41,8 +39,8 @@ public class RS_users extends RS {
 	public void selectByAdminState(boolean IsAdmin, String OrderByString) throws SQLException {
 		String QuerySQL = "SELECT uuid, name, password, admin FROM sys_users WHERE admin = true " + OrderByString;
 		PreparedStatement pstmt;
-		pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		setRST(DBActions.doQuery(pstmt));
+		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		setRST(getDBConnHandler().doQuery(pstmt));
 		getRST().first();
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
 	}
@@ -53,10 +51,10 @@ public class RS_users extends RS {
 
 		String QuerySQL = "SELECT uuid FROM sys_users WHERE name=? ";
 		PreparedStatement pstmt;
-		pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		int n = 1;
 		pstmt.setString(n++, MyCashier);
-		MyRST = DBActions.doQuery(pstmt);
+		MyRST = getDBConnHandler().doQuery(pstmt);
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
 		MyRST.first();
 		MyRST.last();
@@ -77,9 +75,9 @@ public class RS_users extends RS {
 		// Remember to setUserID(String MyID) first...
 		String QuerySQL = SQLSelectByPK;
 		PreparedStatement pstmt;
-		pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		pstmt.setObject(1, (UUID) MyPK);
-		setRST(DBActions.doQuery(pstmt));
+		setRST(getDBConnHandler().doQuery(pstmt));
 		getRST().first();
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
 	}
@@ -97,9 +95,9 @@ public class RS_users extends RS {
 	public void selectByName(String MyName) throws SQLException {
 		String QuerySQL = "SELECT uuid, name, password, admin FROM sys_users WHERE name = ? ";
 		PreparedStatement pstmt;
-		pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		pstmt.setString(1, MyName);
-		setRST(DBActions.doQuery(pstmt));
+		setRST(getDBConnHandler().doQuery(pstmt));
 		getRST().first();
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
 	}
@@ -128,25 +126,25 @@ public class RS_users extends RS {
 
 		String QuerySQL = "INSERT INTO public.sys_users (name, password, admin) VALUES (?, ?, ?)";
 		PreparedStatement pstmt;
-		pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		int n = 1;
 		pstmt.setString(n++, MyRec.getName());
 		pstmt.setString(n++, (MyRec.getPassword()));
 		pstmt.setBoolean(n++, MyRec.isAdmin());
 
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
-		return doUpdate(pstmt) > 0;
+		return getDBConnHandler().doUpdate(pstmt) > 0;
 	}
 
 	@Override
 	public int deleteRow() throws SQLException {
 		// Delete single record:
 		String QuerySQL = "DELETE FROM sys_users WHERE uuid = ? ";
-		PreparedStatement pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		PreparedStatement pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		int n = 1;
 		pstmt.setInt(n++, MyID);
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
-		return doUpdate(pstmt);
+		return getDBConnHandler().doUpdate(pstmt);
 	}
 
 	@Override
@@ -156,14 +154,14 @@ public class RS_users extends RS {
 
 		String QuerySQL = "UPDATE sys_users SET name=?, password=?, admin=? WHERE " + (String) WhereParam;
 		PreparedStatement pstmt;
-		pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		int n = 1;
 		pstmt.setString(n++, MyRec.getName());
 		pstmt.setString(n++, (MyRec.getPassword()));
 		pstmt.setBoolean(n++, MyRec.isAdmin());
 
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
-		return doUpdate(pstmt) > 0;
+		return getDBConnHandler().doUpdate(pstmt) > 0;
 	}
 
 	@Override
@@ -175,11 +173,11 @@ public class RS_users extends RS {
 	public boolean deleteRowByID(String MyID) throws SQLException {
 		// Delete single record:
 		String QuerySQL = "DELETE FROM sys_users WHERE name = ? ";
-		PreparedStatement pstmt = DBActions.getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		PreparedStatement pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		int n = 1;
 		pstmt.setString(n++, MyID);
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
-		return doUpdate(pstmt) > 0;
+		return getDBConnHandler().doUpdate(pstmt) > 0;
 	}
 
 	@Override

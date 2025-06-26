@@ -1,7 +1,7 @@
 package cu.jsoft.j_loginfx;
 
+import cu.jsoft.j_dbfxlite.DBConnectionHandler;
 import static cu.jsoft.j_dbfxlite.DBNotifications.NotifyErrorDB;
-import cu.jsoft.j_loginfx.global.CONSTS;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
 import cu.jsoft.j_utilsfxlite.security.types.TYP_ParamDLG_Login;
@@ -21,8 +21,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 
 public class LoginController {
-	ArrayList<TYP_ParamDLG_Login> lstUsers = new ArrayList<>();
-	Dialog dialog;
+	private ArrayList<TYP_ParamDLG_Login> lstUsers = new ArrayList<>();
+	private Dialog dialog;
+	private String AESSalt;
+	private String SecKeyStr;
+	private byte[] IV;
+	private DBConnectionHandler DBConnHandler;
 
 	@FXML
 	private Label lblTitle;
@@ -37,6 +41,21 @@ public class LoginController {
 		String LastUser = "";
 		String VersionString = "";
 
+//		// Check for existing user names in DB table sys_users:
+//		if (countUsers() == 0) {
+//			return;
+//		}
+//
+//		// There are users, continuing on to login dialog:
+//
+//		// Get list of user names:
+//		setUserList(loadUsers());
+//
+//		// Set focus on password field:
+//		Platform.runLater(() -> passwordField.requestFocus());
+	}
+
+	public void setDialog(Dialog MyDialog) {
 		// Check for existing user names in DB table sys_users:
 		if (countUsers() == 0) {
 			return;
@@ -49,9 +68,8 @@ public class LoginController {
 
 		// Set focus on password field:
 		Platform.runLater(() -> passwordField.requestFocus());
-	}
 
-	public void setDialog(Dialog MyDialog) {
+
 		dialog = MyDialog;
 		final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {
@@ -65,9 +83,30 @@ public class LoginController {
 		lblTitle.setText(thetitle);
 	}
 
+	public void setAESSalt(String AESSalt) {
+		this.AESSalt = AESSalt;
+	}
+
+	public void setSecKeyStr(String SecKeyStr) {
+		this.SecKeyStr = SecKeyStr;
+	}
+
+	public void setIV(byte[] IV) {
+		this.IV = IV;
+	}
+
+	/**
+	 * @param DBConnHandler the DBConnHandler to set
+	 */
+	public void setDBConnHandler(DBConnectionHandler DBConnHandler) {
+		this.DBConnHandler = DBConnHandler;
+	}
+
 	private int countUsers() {
 		// Count user names from DB table sys_users:
 		RS_users MyRSUsers = new RS_users();
+		MyRSUsers.setMyConn(DBConnHandler.getMyConn());
+
 		int MyUserCount = 0;
 		try {
 			MyUserCount = MyRSUsers.CountUsers();
@@ -80,6 +119,7 @@ public class LoginController {
 	private ArrayList<TYP_ParamDLG_Login> loadUsers() {
 		TYP_user MyRow = new TYP_user();
 		RS_users MyRSUsers = new RS_users();
+		MyRSUsers.setDBConnHandler(DBConnHandler);
 
 		// Query DB for list of user names:
 		try {
@@ -163,8 +203,7 @@ public class LoginController {
 			String pass = lstUsers.get(index).getPassword();
 
 			//Encrypt typed password to compare with encrypted one from DB:
-			String myEncString = Protection.getEncryptedString(userPass, new StringBuffer(CONSTS.AESSalt).reverse().toString(), new StringBuffer(CONSTS.SecKeyStr).reverse().toString(), CONSTS.iv);
-			//String MyDecString = Protection.getDecryptedString(sPass, new StringBuffer(CONSTS.SecKeyStr).reverse().toString(), CONSTS.iv);
+			String myEncString = Protection.getEncryptedString(userPass, AESSalt, SecKeyStr, IV);
 
 			return ((myEncString.equals(pass)));
 	}

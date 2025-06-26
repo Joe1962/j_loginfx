@@ -1,16 +1,18 @@
 package cu.jsoft.j_loginfx.users;
 
 import cu.jsoft.j_loginfx.SUB_Protect;
-import cu.jsoft.j_loginfx.global.CONSTS;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Paint;
 
-public class adduserController {
-	Dialog dialog;
-	String dlgTitle;
+public class AdduserController {
+	private Dialog dialog;
+	private String dlgTitle;
+	private String AESSalt;
+	private String SecKeyStr;
+	private byte[] IV;
 
 	@FXML
 	private Label lblTitle;
@@ -47,6 +49,18 @@ public class adduserController {
 		dlgTitle = theTitle;
 	}
 
+	public void setAESSalt(String AESSalt) {
+		this.AESSalt = AESSalt;
+	}
+
+	public void setSecKeyStr(String SecKeyStr) {
+		this.SecKeyStr = SecKeyStr;
+	}
+
+	public void setIV(byte[] IV) {
+		this.IV = IV;
+	}
+
 	public void setHeader(String theTitle) {
 		lblTitle.setText(theTitle);
 	}
@@ -81,7 +95,7 @@ public class adduserController {
 		SUB_Protect Protection = new SUB_Protect();
 
 		// Encrypt password and return a TYP_user struct:
-		String myEncString = Protection.getEncryptedString(passwordField1.getText(), new StringBuffer(CONSTS.AESSalt).reverse().toString(), new StringBuffer(CONSTS.SecKeyStr).reverse().toString(), CONSTS.iv);
+		String myEncString = Protection.getEncryptedString(passwordField1.getText(), new StringBuffer(AESSalt).reverse().toString(), new StringBuffer(SecKeyStr).reverse().toString(), IV);
 
 		return new TYP_user(
 			null,

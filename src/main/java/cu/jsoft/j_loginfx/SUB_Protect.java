@@ -3,15 +3,12 @@
  */
 package cu.jsoft.j_loginfx;
 
-import static cu.jsoft.j_dbfxlite.DBActions.DBStructCheck;
 import cu.jsoft.j_dbfxlite.DBConnectionHandler;
 import cu.jsoft.j_dbfxlite.types.TYP_DBStructCheck;
 import cu.jsoft.j_loginfx.global.FLAGS;
+import cu.jsoft.j_loginfx.users.AdduserController;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
-import cu.jsoft.j_loginfx.users.adduserController;
-import cu.jsoft.j_utilsfxlite.security.CLS_AES_Utils;
-import cu.jsoft.j_utilsfxlite.security.types.TYP_AES_Utils;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -28,26 +25,13 @@ import javafx.stage.Stage;
  *
  * @author joe1962
  */
-public class SUB_Protect {
+public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 	ArrayList<String> FailList = new ArrayList<>();
 
 	public SUB_Protect() {
 	}
 
-	public String getEncryptedString(String toEncrypt, String theSalt, String theSecKey, byte[] theIV) {
-		TYP_AES_Utils MyTyp = CLS_AES_Utils.strEncryptHelper(toEncrypt, theSalt, theSecKey, theIV);
-		return MyTyp.getEncryptedStr();
-	}
-
-	public String getDecryptedString(String theEncKey, String theSecKey, byte[] theIV) {
-		TYP_AES_Utils MyTyp = new TYP_AES_Utils();
-		MyTyp.setSecKeyStr(theSecKey);
-		MyTyp.setIv(theIV);
-		MyTyp.setEncryptedStr(theEncKey);
-		return CLS_AES_Utils.strDecrypthelper(MyTyp);
-	}
-
-	public String doLogin(Stage MyMainForm, String theTitle) throws IOException {
+	public String doLogin(Stage MyMainForm, String theTitle, String theSalt, String theSecKey, byte[] theIV, DBConnectionHandler DBConnHandler) throws IOException {
 		boolean retBool = false;
 
 		Dialog<ButtonType> dialog = new Dialog<>();
@@ -61,8 +45,12 @@ public class SUB_Protect {
 
 		// Set login dialog title and fill user list combo:
 		LoginController loginController = loader.getController();
-		loginController.setDialog(dialog);
 		loginController.setTitle(theTitle);
+		loginController.setAESSalt(theSalt);
+		loginController.setSecKeyStr(theSecKey);
+		loginController.setIV(theIV);
+		loginController.setDBConnHandler(DBConnHandler);
+		loginController.setDialog(dialog);
 
 		// Show login dialog and wait for result:
 		Optional<ButtonType> result = dialog.showAndWait();
@@ -78,8 +66,9 @@ public class SUB_Protect {
 		return loginController.getSelectedUser();
 	}
 
-	public boolean checkUsers(Class logClass, Stage MyMainForm, String theDialogTitle, String theHeader, boolean isSuperAdmin) throws IOException {
+	public boolean checkUsers(Class logClass, Stage MyMainForm, String theDialogTitle, String theHeader, boolean isSuperAdmin, String theSalt, String theSecKey, byte[] theIV, DBConnectionHandler DBConnHandler) throws IOException {
 		RS_users MyRSUsers = new RS_users();
+		MyRSUsers.setDBConnHandler(DBConnHandler);
 
 		int MyUserCount = 0;
 		try {
@@ -102,18 +91,21 @@ public class SUB_Protect {
 			dialog2.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 			// Set login dialog title and fill user list combo:
-			adduserController loginController2 = loader2.getController();
-			loginController2.setTitle(theDialogTitle);
-			loginController2.setHeader(theHeader);
+			AdduserController adduserController = loader2.getController();
+			adduserController.setTitle(theDialogTitle);
+			adduserController.setHeader(theHeader);
+			adduserController.setAESSalt(theSalt);
+			adduserController.setSecKeyStr(theSecKey);
+			adduserController.setIV(theIV);
 			if (isSuperAdmin) {
-				loginController2.setSuperAdminMode();
+				adduserController.setSuperAdminMode();
 			}
-			loginController2.setDialog(dialog2);
+			adduserController.setDialog(dialog2);
 
 			// Show new user dialog and wait for result:
 			Optional<ButtonType> result = dialog2.showAndWait();
 			if (result.isPresent() && result.get() == ButtonType.OK) {
-				TYP_user newUser = loginController2.getNewUser();
+				TYP_user newUser = adduserController.getNewUser();
 				// TODO: do sommink with this new user...
 				MyRow.setName(newUser.getName());
 				MyRow.setAdmin(newUser.isAdmin());
@@ -135,13 +127,12 @@ public class SUB_Protect {
 		return true;
 	}
 
-	public ArrayList<String> checkUsersTable(String theDB) throws SQLException {
-		DBConnectionHandler dbConn = new DBConnectionHandler();
+	public ArrayList<String> checkUsersTable(DBConnectionHandler dbConn, String theDB) throws SQLException {
 
-		if (dbConn.isTable(theDB, "public", "sys_users")) {
+		if (!dbConn.isTable(theDB, "public", "sys_users")) {
 			FailList.add("La tabla " + theDB + "no existe");
 		} else {
-			FailList = DBStructCheck(theDB, "public", "sys_users", getDBStruct(), false);
+			FailList = dbConn.DBStructCheck(theDB, "public", "sys_users", getDBStruct(), false);
 		}
 
 		return FailList;
