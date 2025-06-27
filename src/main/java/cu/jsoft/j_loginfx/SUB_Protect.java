@@ -130,7 +130,7 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 	public ArrayList<String> checkUsersTable(DBConnectionHandler dbConn, String theDB) throws SQLException {
 
 		if (!dbConn.isTable(theDB, "public", "sys_users")) {
-			FailList.add("La tabla " + theDB + "no existe");
+			FailList.add("La tabla " + theDB + " no existe");
 		} else {
 			FailList = dbConn.DBStructCheck(theDB, "public", "sys_users", getDBStruct(), false);
 		}
@@ -139,9 +139,9 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 	}
 
 	private static ArrayList<TYP_DBStructCheck> getDBStruct() {
-		TYP_DBStructCheck DBStructParams = new TYP_DBStructCheck();
 		ArrayList<TYP_DBStructCheck> DBStruct = new ArrayList();
 
+		TYP_DBStructCheck DBStructParams = new TYP_DBStructCheck();
 		DBStructParams.setColumn_name("uuid");
 		DBStructParams.setColumn_default("uuid_generate_v4()");
 		DBStructParams.setIs_nullable("NO");
@@ -165,6 +165,7 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 		DBStructParams.setCharacter_maximum_length(64);
 		DBStruct.add(DBStructParams);
 
+		DBStructParams = new TYP_DBStructCheck();
 		DBStructParams.setColumn_name("admin");
 		DBStructParams.setColumn_default("false");
 		DBStructParams.setIs_nullable("NO");
