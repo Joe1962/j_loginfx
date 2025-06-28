@@ -1,3 +1,6 @@
+/*
+ * Copyright Joe1962
+ */
 package cu.jsoft.j_loginfx.users;
 
 import cu.jsoft.j_utilsfxlite.security.SUB_Protect;

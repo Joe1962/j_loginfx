@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright Joe1962
  */
 package cu.jsoft.j_loginfx.users;
 

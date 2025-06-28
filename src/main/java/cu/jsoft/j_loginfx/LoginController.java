@@ -1,3 +1,6 @@
+/*
+ * Copyright Joe1962
+ */
 package cu.jsoft.j_loginfx;
 
 import cu.jsoft.j_dbfxlite.DBConnectionHandler;
