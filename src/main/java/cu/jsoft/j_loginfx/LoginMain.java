@@ -10,6 +10,7 @@ import cu.jsoft.j_loginfx.users.AdduserController;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,10 +26,10 @@ import javafx.stage.Stage;
  *
  * @author joe1962
  */
-public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
+public class LoginMain {
 	ArrayList<String> FailList = new ArrayList<>();
 
-	public SUB_Protect() {
+	public LoginMain() {
 	}
 
 	public String doLogin(Stage MyMainForm, String theTitle, String theSalt, String theSecKey, byte[] theIV, DBConnectionHandler DBConnHandler) throws IOException {
@@ -37,7 +38,7 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 		Dialog<ButtonType> dialog = new Dialog<>();
 		dialog.getDialogPane().setStyle("-fx-background-color: #d4ffbf");
 
-		URL location = SUB_Protect.class.getResource("/fxml/login.fxml");
+		URL location = LoginMain.class.getResource("/fxml/login.fxml");
 		FXMLLoader loader = new FXMLLoader(location);
 
 		dialog.getDialogPane().setContent(loader.load());
@@ -84,7 +85,7 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 			Dialog<ButtonType> dialog2 = new Dialog<>();
 			dialog2.getDialogPane().setStyle("-fx-background-color: #d4ffbf");
 
-			URL location2 = SUB_Protect.class.getResource("/fxml/adduser.fxml");
+			URL location2 = LoginMain.class.getResource("/fxml/adduser.fxml");
 			FXMLLoader loader2 = new FXMLLoader(location2);
 
 			dialog2.getDialogPane().setContent(loader2.load());
@@ -130,7 +131,7 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 	public ArrayList<String> checkUsersTable(DBConnectionHandler dbConn, String theDB) throws SQLException {
 
 		if (!dbConn.isTable(theDB, "public", "sys_users")) {
-			FailList.add("La tabla " + theDB + " no existe");
+			FailList.add("La tabla sys_users no existe");
 		} else {
 			FailList = dbConn.DBStructCheck(theDB, "public", "sys_users", getDBStruct(), false);
 		}
@@ -138,7 +139,7 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 		return FailList;
 	}
 
-	private static ArrayList<TYP_DBStructCheck> getDBStruct() {
+	private ArrayList<TYP_DBStructCheck> getDBStruct() {
 		ArrayList<TYP_DBStructCheck> DBStruct = new ArrayList();
 
 		TYP_DBStructCheck DBStructParams = new TYP_DBStructCheck();
@@ -174,6 +175,59 @@ public class SUB_Protect extends cu.jsoft.j_utilsfxlite.security.SUB_Protect {
 		DBStruct.add(DBStructParams);
 
 		return DBStruct;
+	}
+
+	public String getSQLText() throws URISyntaxException, IOException {
+//		Path textPath = Paths.get(getClass().getResource("/sql/tbl_sys_users.sql").toURI());
+//		return readFileToString(textPath, Charset.forName("utf-8"));
+
+		return "/* \n" +
+" * Copyright Joe1962\n" +
+" * https://github.com/Joe1962\n" +
+" */\n" +
+"\n" +
+"/**\n" +
+" * Author:  joe1962\n" +
+" * Created: Jul 15, 2024\n" +
+" */\n" +
+"\n" +
+"-- NOTE: To use with psql replace $DATABASE with correct DB name:\n" +
+"-- sudo -u postgres psql $DATABASE -f tbl_sys_users.sql\n" +
+"\n" +
+"-- NOTE: Replace $OWNER below with correct role name.\n" +
+"\n" +
+"\n" +
+"\n" +
+"-- public.sys_users definition\n" +
+"-- DROP TABLE public.sys_users;\n" +
+"CREATE TABLE public.sys_users (\n" +
+"	uuid uuid NOT NULL DEFAULT uuid_generate_v4(),\n" +
+"	name varchar(64) NOT NULL,\n" +
+"	password varchar(64) NOT NULL,\n" +
+"	admin boolean NOT NULL DEFAULT false,\n" +
+"	CONSTRAINT pk_sys_users PRIMARY KEY (uuid),\n" +
+"	CONSTRAINT \"uq_sys_users_name\" UNIQUE (name)\n" +
+")\n" +
+"\n" +
+"\n" +
+"\n" +
+"TABLESPACE pg_default;\n" +
+"\n" +
+"ALTER TABLE IF EXISTS public.sys_users OWNER to $OWNER;\n" +
+"GRANT ALL ON TABLE public.sys_users TO $OWNER;\n" +
+"\n" +
+"\n" +
+"\n" +
+"-- Index: idx_sales_master_id_payment\n" +
+"-- DROP INDEX IF EXISTS public.idx_sys_users_name;\n" +
+"CREATE INDEX IF NOT EXISTS idx_sys_users_name\n" +
+"	ON public.sys_users USING btree\n" +
+"	(name ASC NULLS FIRST)\n" +
+"	TABLESPACE pg_default;\n" +
+"\n" +
+";\n" +
+"\n" +
+"";
 	}
 
 }

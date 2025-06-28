@@ -1,6 +1,6 @@
 package cu.jsoft.j_loginfx.users;
 
-import cu.jsoft.j_loginfx.SUB_Protect;
+import cu.jsoft.j_utilsfxlite.security.SUB_Protect;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

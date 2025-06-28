@@ -4,6 +4,7 @@ import cu.jsoft.j_dbfxlite.DBConnectionHandler;
 import static cu.jsoft.j_dbfxlite.DBNotifications.NotifyErrorDB;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
+import cu.jsoft.j_utilsfxlite.security.SUB_Protect;
 import cu.jsoft.j_utilsfxlite.security.types.TYP_ParamDLG_Login;
 import java.io.IOException;
 import java.sql.SQLException;
