@@ -9,14 +9,17 @@ import cu.jsoft.j_loginfx.global.FLAGS;
 import cu.jsoft.j_loginfx.users.AdduserController;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -179,57 +182,16 @@ public class LoginMain {
 		return DBStruct;
 	}
 
-	public String getSQLText() throws URISyntaxException, IOException {
-//		Path textPath = Paths.get(getClass().getResource("/sql/tbl_sys_users.sql").toURI());
-//		return readFileToString(textPath, Charset.forName("utf-8"));
+	public String getSQLText() throws IOException {
+		InputStream resource = this.getClass().getClassLoader().getResourceAsStream("sql/tbl_sys_users.sql");
 
-		return "/* \n" +
-" * Copyright Joe1962\n" +
-" * https://github.com/Joe1962\n" +
-" */\n" +
-"\n" +
-"/**\n" +
-" * Author:  joe1962\n" +
-" * Created: Jul 15, 2024\n" +
-" */\n" +
-"\n" +
-"-- NOTE: To use with psql replace $DATABASE with correct DB name:\n" +
-"-- sudo -u postgres psql $DATABASE -f tbl_sys_users.sql\n" +
-"\n" +
-"-- NOTE: Replace $OWNER below with correct role name.\n" +
-"\n" +
-"\n" +
-"\n" +
-"-- public.sys_users definition\n" +
-"-- DROP TABLE public.sys_users;\n" +
-"CREATE TABLE public.sys_users (\n" +
-"	uuid uuid NOT NULL DEFAULT uuid_generate_v4(),\n" +
-"	name varchar(64) NOT NULL,\n" +
-"	password varchar(64) NOT NULL,\n" +
-"	admin boolean NOT NULL DEFAULT false,\n" +
-"	CONSTRAINT pk_sys_users PRIMARY KEY (uuid),\n" +
-"	CONSTRAINT \"uq_sys_users_name\" UNIQUE (name)\n" +
-")\n" +
-"\n" +
-"\n" +
-"\n" +
-"TABLESPACE pg_default;\n" +
-"\n" +
-"ALTER TABLE IF EXISTS public.sys_users OWNER to $OWNER;\n" +
-"GRANT ALL ON TABLE public.sys_users TO $OWNER;\n" +
-"\n" +
-"\n" +
-"\n" +
-"-- Index: idx_sales_master_id_payment\n" +
-"-- DROP INDEX IF EXISTS public.idx_sys_users_name;\n" +
-"CREATE INDEX IF NOT EXISTS idx_sys_users_name\n" +
-"	ON public.sys_users USING btree\n" +
-"	(name ASC NULLS FIRST)\n" +
-"	TABLESPACE pg_default;\n" +
-"\n" +
-";\n" +
-"\n" +
-"";
+		if (resource != null) {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
+			return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+		} else {
+			return null;
+		}
+		
 	}
 
 }

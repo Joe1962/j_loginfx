@@ -43,4 +43,3 @@ CREATE INDEX IF NOT EXISTS idx_sys_users_name
 	TABLESPACE pg_default;
 
 ;
-
