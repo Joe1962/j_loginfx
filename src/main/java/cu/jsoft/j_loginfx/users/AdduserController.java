@@ -1,6 +1,7 @@
 package cu.jsoft.j_loginfx.users;
 
 import cu.jsoft.j_utilsfxlite.security.SUB_Protect;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -36,6 +37,9 @@ public class AdduserController {
 	public void setDialog(Dialog MyDialog) {
 		dialog = MyDialog;
 		dialog.setTitle(dlgTitle);
+
+		// Set focus on password field:
+		Platform.runLater(() -> passwordField1.requestFocus());
 
 		final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {

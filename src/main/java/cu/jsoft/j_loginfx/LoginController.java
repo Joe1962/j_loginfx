@@ -70,7 +70,6 @@ public class LoginController {
 		// Set focus on password field:
 		Platform.runLater(() -> passwordField.requestFocus());
 
-
 		dialog = MyDialog;
 		final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
 		btOk.addEventFilter(ActionEvent.ACTION, event -> {

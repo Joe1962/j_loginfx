@@ -39,25 +39,25 @@
          
                 <!-- Form -->
              <GridPane hgap="5.0" vgap="10.0" GridPane.columnIndex="1">
-               <Label style="-fx-font-weight: bold;" text="Usuario:" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0">
+               <Label focusTraversable="false" style="-fx-font-weight: bold;" text="Usuario:" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="0">
                      <GridPane.margin>
                         <Insets right="5.0" />
                      </GridPane.margin>
                   </Label>
+                  <TextField fx:id="usernameField" promptText="Login del nuevo usuario" GridPane.columnIndex="1" />
          
-                  <Label style="-fx-font-weight: bold;" text="Contraseña:" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                  <Label focusTraversable="false" style="-fx-font-weight: bold;" text="Contraseña:" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets right="5.0" />
                      </GridPane.margin>
                   </Label>
                <PasswordField fx:id="passwordField1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Introduzca contraseña" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                  <Label style="-fx-font-weight: bold;" text="Confirmar:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                  <Label focusTraversable="false" style="-fx-font-weight: bold;" text="Confirmar:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets right="5.0" />
                      </GridPane.margin>
                   </Label>
                   <PasswordField fx:id="passwordField2" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Confirme contraseña" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <TextField fx:id="usernameField" promptText="Login del nuevo usuario" GridPane.columnIndex="1" />
                   <CheckBox fx:id="adminCheckBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Administrador" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <columnConstraints>
                      <ColumnConstraints />
