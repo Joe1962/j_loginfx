@@ -95,7 +95,7 @@ public class AdduserController {
 		SUB_Protect Protection = new SUB_Protect();
 
 		// Encrypt password and return a TYP_user struct:
-		String myEncString = Protection.getEncryptedString(passwordField1.getText(), new StringBuffer(AESSalt).reverse().toString(), new StringBuffer(SecKeyStr).reverse().toString(), IV);
+		String myEncString = Protection.getEncryptedString(passwordField1.getText(), AESSalt, SecKeyStr, IV);
 
 		return new TYP_user(
 			null,

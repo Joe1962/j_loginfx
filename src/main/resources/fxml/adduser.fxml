@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="209.0" prefWidth="502.0" style="-fx-background-color: #d4ffbf;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cu.jsoft.j_loginfx.users.adduserController">
+<StackPane alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="209.0" prefWidth="502.0" style="-fx-background-color: #d4ffbf;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cu.jsoft.j_loginfx.users.AdduserController">
    <VBox spacing="25.0" StackPane.alignment="CENTER">
       <children>
       <Label fx:id="lblTitle" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
