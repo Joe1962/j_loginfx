@@ -32,8 +32,8 @@ CREATE TABLE public.sys_users (
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.sys_users OWNER to $OWNER;
-GRANT ALL ON TABLE public.sys_users TO $OWNER;
+ALTER TABLE IF EXISTS public.sys_users OWNER to siguapa_owner;
+GRANT ALL ON TABLE public.sys_users TO siguapa_owner;
 
 -- Index: idx_sales_master_id_payment
 -- DROP INDEX IF EXISTS public.idx_sys_users_name;

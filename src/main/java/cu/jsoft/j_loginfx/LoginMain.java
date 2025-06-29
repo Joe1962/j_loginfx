@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -32,7 +33,6 @@ import javafx.stage.Stage;
  * @author joe1962
  */
 public class LoginMain {
-	ArrayList<String> FailList = new ArrayList<>();
 
 	public LoginMain() {
 	}
@@ -48,6 +48,7 @@ public class LoginMain {
 
 		dialog.getDialogPane().setContent(loader.load());
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		dialog.initModality(Modality.WINDOW_MODAL);
 
 		// Set login dialog title and fill user list combo:
 		LoginController loginController = loader.getController();
@@ -95,6 +96,7 @@ public class LoginMain {
 
 			dialog2.getDialogPane().setContent(loader2.load());
 			dialog2.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+			dialog2.initModality(Modality.WINDOW_MODAL);
 
 			// Set login dialog title and fill user list combo:
 			AdduserController adduserController = loader2.getController();
@@ -134,11 +136,19 @@ public class LoginMain {
 	}
 
 	public ArrayList<String> checkUsersTable(DBConnectionHandler dbConn, String theDB) throws SQLException {
+		ArrayList<String> FailList = new ArrayList<>();
+		StringBuilder extError = new StringBuilder();
 
 		if (!dbConn.isTable(theDB, "public", "sys_users")) {
 			FailList.add("La tabla sys_users no existe");
 		} else {
+			if (!dbConn.isExtension("uuid-ossp")) {
+				extError.append("No está instalada la extensión 'uuid-ossp'.");
+			}
 			FailList = dbConn.DBStructCheck(theDB, "public", "sys_users", getDBStruct(), false);
+			if (!extError.isEmpty()) {
+				FailList.addFirst(extError.toString());
+			}
 		}
 
 		return FailList;

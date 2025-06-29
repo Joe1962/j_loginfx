@@ -44,19 +44,6 @@ public class LoginController {
 	public void initialize() throws IOException {
 		String LastUser = "";
 		String VersionString = "";
-
-//		// Check for existing user names in DB table sys_users:
-//		if (countUsers() == 0) {
-//			return;
-//		}
-//
-//		// There are users, continuing on to login dialog:
-//
-//		// Get list of user names:
-//		setUserList(loadUsers());
-//
-//		// Set focus on password field:
-//		Platform.runLater(() -> passwordField.requestFocus());
 	}
 
 	public void setDialog(Dialog MyDialog) {
