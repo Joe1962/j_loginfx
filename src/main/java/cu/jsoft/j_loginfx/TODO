@@ -2,6 +2,7 @@ j_loginfx TODO:
 
 TODO: First user creation dialog must start with focus on first password field.
 TODO: implement check for uuid_ossp extension in sys_users table validation.
+TODO: After create superadmin dialog, login dialog does not have focus (at least when running in IDE).
 
 ********************************************************************************
 
