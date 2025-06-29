@@ -4,6 +4,8 @@
  */
 
 /**
+ * tbl_sys_users.sql
+ *
  * Author:  joe1962
  * Created: Jul 15, 2024
  */
@@ -14,6 +16,8 @@
 -- NOTE: Replace $OWNER below with correct role name.
 
 
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- public.sys_users definition
 -- DROP TABLE public.sys_users;
@@ -26,14 +30,10 @@ CREATE TABLE public.sys_users (
 	CONSTRAINT "uq_sys_users_name" UNIQUE (name)
 )
 
-
-
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.sys_users OWNER to $OWNER;
 GRANT ALL ON TABLE public.sys_users TO $OWNER;
-
-
 
 -- Index: idx_sales_master_id_payment
 -- DROP INDEX IF EXISTS public.idx_sys_users_name;
