@@ -4,18 +4,36 @@
  */
 
 /**
- * tbl_sys_users.sql
+ * tbl_sys_users_full.sql
+ *
+ * This combines ext_uuid_ossp.sql and tbl_sys_users.sql
+ * to fully enable the use of j_loginfx.
  *
  * Author:  joe1962
- * Created: Jul 15, 2024
+ * Created: Jun 28, 2025
  */
-
--- NOTE: To use with psql replace $DATABASE with correct DB name:
--- sudo -u postgres psql $DATABASE -f tbl_sys_users.sql
 
 -- NOTE: Replace $OWNER below with correct role name.
 
+-- NOTE: To use with psql replace $DATABASE with correct DB name:
+-- sudo -u postgres psql $DATABASE -f tbl_sys_users_full.sql
 
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- DROP ROLE siguapa_owner;
+
+CREATE ROLE $OWNER WITH 
+	PASSWORD '123'
+	NOSUPERUSER
+	NOCREATEDB
+	NOCREATEROLE
+	INHERIT
+	LOGIN
+	NOREPLICATION
+	NOBYPASSRLS
+	CONNECTION LIMIT -1;
 
 -- public.sys_users definition
 -- DROP TABLE public.sys_users;
@@ -41,4 +59,3 @@ CREATE INDEX IF NOT EXISTS idx_sys_users_name
 	TABLESPACE pg_default;
 
 ;
-
