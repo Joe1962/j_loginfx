@@ -8,11 +8,11 @@
 -- NOTE: Replace $OWNER below with correct role name.
 
 -- NOTE: To use with psql replace $DATABASE with correct name:
--- sudo -u postgres psql $DATABASE -f rol_siguapa_owner.sql
+-- sudo -u postgres psql $DATABASE -f rol_owner.sql
 
 
 
--- DROP ROLE siguapa_owner;
+-- DROP ROLE $OWNER;
 
 CREATE ROLE $OWNER WITH 
 	PASSWORD '123'

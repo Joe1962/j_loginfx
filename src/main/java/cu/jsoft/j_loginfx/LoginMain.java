@@ -5,12 +5,13 @@ package cu.jsoft.j_loginfx;
 
 import cu.jsoft.j_dbfxlite.DBConnectionHandler;
 import cu.jsoft.j_dbfxlite.types.TYP_DBStructCheck;
-import cu.jsoft.j_loginfx.global.FLAGS;
 import cu.jsoft.j_loginfx.users.AdduserController;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
+import cu.jsoft.j_utilsfxlite.global.CONSTS;
 import static cu.jsoft.j_utilsfxlite.global.CONSTS.NEW_LINE;
 import static cu.jsoft.j_utilsfxlite.subs.SUB_PopupsFX.MsgErrorOKFX;
+import static cu.jsoft.j_utilsfxlite.subs.SUB_PopupsFX.MsgErrorYesNoFX;
 import static cu.jsoft.j_utilsfxlite.subs.SUB_PopupsFX.SimpleDialog;
 import static cu.jsoft.j_utilsfxlite.subs.SUB_UtilsFXResources.getResourceImage;
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -48,25 +50,31 @@ import javafx.stage.Stage;
  * @author joe1962
  */
 public class LoginMain {
-	Class logClass;
-	DBConnectionHandler dbConn;
-	String dbName;
-	Font errHeaderFont;
-	Font errContentFont;
-	String theTitle;
-	String theSalt;
-	String theSecKey;
-	byte[] theIV;
+	private Class logClass;
+	private DBConnectionHandler dbConn;
+	private String dbName;
+	private Stage theOwnerForm;
+	private Font errHeaderFont;
+	private Font errContentFont;
+	private String theTitle;
+	private String theSalt;
+	private String theSecKey;
+	private byte[] theIV;
+	private String dbOwner;
+	private boolean dbErrorMissingDB = false;
+	private boolean dbErrorMissingExt = false;
 
-	public LoginMain(Class logClass, DBConnectionHandler DBConnHandler, String dbName, Font errHeaderFont, Font errContentFont) throws SQLException {
+	public LoginMain(Class logClass, DBConnectionHandler DBConnHandler, String dbName, String dbOwner, Font errHeaderFont, Font errContentFont) throws SQLException {
 		this.logClass = logClass;
 		this.dbConn = DBConnHandler;
 		this.dbName = dbName;
+		this.dbOwner = dbOwner;
 		this.errHeaderFont = errHeaderFont;
 		this.errContentFont = errContentFont;
 	}
 
 	public String doLogin(Stage MyMainForm, String theTitle, String theSalt, String theSecKey, byte[] theIV) throws IOException {
+		this.theOwnerForm = MyMainForm;
 		this.theTitle = theTitle;
 		this.theSalt = theSalt;
 		this.theSecKey = theSecKey;
@@ -74,6 +82,35 @@ public class LoginMain {
 		boolean retBool = false;
 
 		if (!doChecks()) {
+
+			// TODO: some of this stuff won't work without postgres user credentials...!!!
+
+			StringBuilder sbMesg = new StringBuilder();
+			sbMesg.append("Desea intentar reparar los errores encontrados en la base de datos?");
+			sbMesg.append(CONSTS.NEW_LINE);
+			sbMesg.append(CONSTS.NEW_LINE);
+			sbMesg.append("El sistema intentará la reparación y terminará; si no hay mensajes de error, reintente de nuevo su ejecución.");
+			retBool = MsgErrorYesNoFX(theOwnerForm, theTitle, "Reparación de la base de datos", sbMesg.toString());
+			if (retBool) {
+//				retBool = makeRole();
+//				if (!retBool) {MsgErrorOKFX(theOwnerForm, theTitle, "Error intentando crear el rol dueño de la base de datos!", "");}
+				
+				if (dbErrorMissingExt) {
+					retBool = makeExt();
+					if (!retBool) {MsgErrorOKFX(theOwnerForm, theTitle, "Error intentando instalar la extensión para generar identificadores UUID!", "");}
+				}
+
+				if (dbErrorMissingDB) {
+//					retBool = makeTable();
+//					if (!retBool) {MsgErrorOKFX(theOwnerForm, theTitle, "Error intentando crea la tabla de usuarios!", "");}
+				} else {
+				}
+
+				// TODO: Try to fix the default value for sys_users.uuid anyway:
+				retBool = makeDefValueUUID();
+				if (!retBool) {MsgErrorOKFX(theOwnerForm, theTitle, "Error intentando arreglar el valor por defecto del campo UUID!", "");}
+			}
+
 			return "";
 		}
 
@@ -99,15 +136,12 @@ public class LoginMain {
 		// Show login dialog and wait for result:
 		Optional<ButtonType> result = dialog.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
-			// TODO: do sommink with this logged-in user...
-			FLAGS.setLOGGEDIN(true);
+			// Login succesaful:
+			return loginController.getSelectedUser();
 		} else {
 			// Login cancelled:
-			FLAGS.setLOGGEDIN(false);			// For future use...???
-			System.exit(111);			// TODO: Fix exit code...
+			return "";
 		}
-
-		return loginController.getSelectedUser();
 	}
 
 	private boolean doChecks() throws IOException {
@@ -115,7 +149,7 @@ public class LoginMain {
 		boolean retBool = false;
 
 		try {
-			UserTableErrorsCheck = checkUsersTable(dbName);
+			UserTableErrorsCheck = checkUsersTable();
 		} catch (SQLException ex) {
 			System.getLogger(logClass.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
 		}
@@ -199,12 +233,12 @@ public class LoginMain {
 
 		if (checkUsers() == 0) {
 			retBool = makeSuperAdmin();
-		}
 
-		if(!retBool) {
-			// TODO: ERROR message and exit with error status code...
-			MsgErrorOKFX(null, "AVISO", null, "No se creó el primer usuario," + NEW_LINE + "El sistema terminará.");
-			return false;
+			if(!retBool) {
+				// TODO: ERROR message and exit with error status code...
+				MsgErrorOKFX(null, "AVISO", null, "No se creó el primer usuario," + NEW_LINE + "El sistema terminará.");
+				return false;
+			}
 		}
 	
 		return true;
@@ -225,17 +259,20 @@ public class LoginMain {
 		return MyUserCount;
 	}
 
-	public ArrayList<String> checkUsersTable(String theDB) throws SQLException {
+	public ArrayList<String> checkUsersTable() throws SQLException {
+		boolean retBool = false;
 		ArrayList<String> FailList = new ArrayList<>();
 		StringBuilder extError = new StringBuilder();
 
-		if (!dbConn.isTable(theDB, "public", "sys_users")) {
+		if (!dbConn.isTable(dbName, "public", "sys_users")) {
 			FailList.add("La tabla sys_users no existe");
+			dbErrorMissingDB = true;
 		} else {
 			if (!dbConn.isExtension("uuid-ossp")) {
 				extError.append("No está instalada la extensión 'uuid-ossp'.");
+				dbErrorMissingExt = true;
 			}
-			FailList = dbConn.DBStructCheck(theDB, "public", "sys_users", getDBStruct(), false);
+			FailList = dbConn.DBStructCheck(dbName, "public", "sys_users", getDBStruct(), false);
 			if (!extError.isEmpty()) {
 				FailList.addFirst(extError.toString());
 			}
@@ -283,7 +320,7 @@ public class LoginMain {
 	}
 
 	public String getSQLText(String sqlFile) throws IOException {
-		InputStream resource = this.getClass().getClassLoader().getResourceAsStream("sql/tbl_sys_users_full.sql");
+		InputStream resource = this.getClass().getClassLoader().getResourceAsStream(sqlFile);
 
 		if (resource != null) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
@@ -294,10 +331,95 @@ public class LoginMain {
 		
 	}
 
-	private boolean makeTable() {
-		
+	private boolean makeRole() {
+		StringBuilder sbSQL = new StringBuilder();
+		var tempSB = new StringBuilder();
+		Pattern p = Pattern.compile("\\$OWNER");
+		Matcher m = p.matcher(tempSB);
+		PreparedStatement pstmt;
 
-		return false;			// Temp...
+		try {
+			// Create the role:
+			try {
+				tempSB.append(getSQLText("sql/rol_owner.sql"));
+			} catch (IOException ex) {
+				System.getLogger(logClass.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			}
+			// Replace '$OWNER' substrings with the real DB owner:
+			sbSQL.append(m.replaceAll(dbOwner));
+			pstmt = dbConn.getMyConn().prepareStatement(sbSQL.toString());
+			dbConn.doUpdate(pstmt);
+		} catch (SQLException ex) {
+			System.getLogger(LoginMain.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			return false;
+		}
+			
+		return true;
+	}
+
+	private boolean makeExt() {
+		StringBuilder sbSQL;
+
+		try {
+			// Create the table:
+			sbSQL = new StringBuilder();
+			try {
+				sbSQL.append(getSQLText("sql/ext_uuid_ossp.sql"));
+			} catch (IOException ex) {
+				System.getLogger(logClass.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			}
+			PreparedStatement pstmt = dbConn.getMyConn().prepareStatement(sbSQL.toString());
+			dbConn.doUpdate(pstmt);
+		} catch (SQLException ex) {
+			System.getLogger(LoginMain.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean makeTable() {
+		StringBuilder sbSQL = new StringBuilder();
+		var tempSB = new StringBuilder();
+		Pattern p = Pattern.compile("\\$OWNER");
+		Matcher m = p.matcher(tempSB);
+		PreparedStatement pstmt;
+
+		try {
+			// Create the extension:
+			sbSQL = new StringBuilder();
+			tempSB = new StringBuilder();
+			try {
+				tempSB.append(getSQLText("sql/tbl_sys_users.sql"));
+			} catch (IOException ex) {
+				System.getLogger(logClass.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			}
+			// Replace '$OWNER' substrings with the real DB owner:
+			//Pattern p = Pattern.compile("\\$OWNER");
+			//Matcher m = p.matcher(tempSB);
+			sbSQL.append(m.replaceAll(dbOwner));
+			pstmt = dbConn.getMyConn().prepareStatement(sbSQL.toString());
+			dbConn.doUpdate(pstmt);
+		} catch (SQLException ex) {
+			System.getLogger(LoginMain.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			return false;
+		}
+			
+		return true;
+	}
+
+	private boolean makeDefValueUUID() {
+		String SQL = "ALTER TABLE sys_users ALTER COLUMN uuid SET DEFAULT uuid_generate_v4();";
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbConn.getMyConn().prepareStatement(SQL);
+			dbConn.doUpdate(pstmt);
+		} catch (SQLException ex) {
+			System.getLogger(LoginMain.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+			return false;
+		}
+
+		return true;
 	}
 
 	private boolean makeSuperAdmin() throws IOException {

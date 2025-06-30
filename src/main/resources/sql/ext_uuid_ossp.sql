@@ -13,8 +13,6 @@
 -- NOTE: To use with psql replace $DATABASE with correct DB name:
 -- sudo -u postgres psql $DATABASE -f ext_uuid_ossp.sql
 
--- NOTE: Replace $OWNER below with correct role name.
-
 
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
