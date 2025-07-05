@@ -72,7 +72,6 @@ public class RS_users extends RS {
 
 	@Override
 	public void selectByPK(Object MyPK) throws SQLException {
-		// Remember to setUserID(String MyID) first...
 		String QuerySQL = SQLSelectByPK;
 		PreparedStatement pstmt;
 		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
