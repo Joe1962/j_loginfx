@@ -454,7 +454,6 @@ public class LoginMain {
 		Optional<ButtonType> result = dialog2.showAndWait();
 		if (result.isPresent() && result.get() == ButtonType.OK) {
 			TYP_user newUser = adduserController.getNewUser();
-			// TODO: do sommink with this new user...
 			MyRow.setName(newUser.getName());
 			MyRow.setAdmin(newUser.isAdmin());
 			MyRow.setPassword(newUser.getPassword());

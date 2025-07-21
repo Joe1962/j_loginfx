@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public class RS_users extends RS {
 	String dbTable = "public.sys_users";
-	private int MyID;
+	private UUID MyID;
 
 	public RS_users() {
 		super();
@@ -141,7 +141,7 @@ public class RS_users extends RS {
 		String QuerySQL = "DELETE FROM sys_users WHERE uuid = ? ";
 		PreparedStatement pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 		int n = 1;
-		pstmt.setInt(n++, MyID);
+		pstmt.setObject(n++, MyID);
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
 		return getDBConnHandler().doUpdate(pstmt);
 	}
@@ -197,14 +197,14 @@ public class RS_users extends RS {
 	/**
 	 * @return the MyID
 	 */
-	public int getUserID() {
+	public UUID getUserID() {
 		return MyID;
 	}
 
 	/**
 	 * @param MyUserID
 	 */
-	public void setUserID(int MyUserID) {
+	public void setUserID(UUID MyUserID) {
 		this.MyID = MyUserID;
 	}
 
