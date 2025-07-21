@@ -194,6 +194,22 @@ public class RS_users extends RS {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	public boolean isAdminByname(String MyName) throws SQLException {
+		String QuerySQL = "SELECT admin FROM sys_users WHERE name = ? ";
+		PreparedStatement pstmt;
+		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		pstmt.setString(1, MyName);
+		setRST(getDBConnHandler().doQuery(pstmt));
+		getRST().first();
+		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
+
+		if (getRST().getRow() > 0) {
+			return getRST().getBoolean("admin");
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * @return the MyID
 	 */
