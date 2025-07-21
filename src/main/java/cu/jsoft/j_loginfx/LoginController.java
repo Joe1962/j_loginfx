@@ -26,6 +26,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 
 public class LoginController {
+
 	private ArrayList<TYP_ParamDLG_Login> lstUsers = new ArrayList<>();
 	private Dialog dialog;
 	private String AESSalt;
@@ -36,7 +37,7 @@ public class LoginController {
 	@FXML
 	private Label lblTitle;
 	@FXML
-	private ComboBox<String> userComboBox;
+	private ComboBox<String> cmbUser;
 	@FXML
 	private PasswordField passwordField;
 	@FXML
@@ -54,7 +55,6 @@ public class LoginController {
 		}
 
 		// There are users, continuing on to login dialog:
-
 		// Get list of user names:
 		setUserList(loadUsers());
 
@@ -144,14 +144,14 @@ public class LoginController {
 	private void setUserList(ArrayList<TYP_ParamDLG_Login> lstUsers) {
 		// TODO: Populate user list from lstUsers:
 		for (TYP_ParamDLG_Login lstUser : lstUsers) {
-			userComboBox.getItems().add(lstUser.getName());
+			cmbUser.getItems().add(lstUser.getName());
 		}
 		// TODO: Select last logged-on user instead of first...???:
-		userComboBox.getSelectionModel().selectFirst();
+		cmbUser.getSelectionModel().selectFirst();
 	}
 
 	public String getSelectedUser() {
-		return userComboBox.getSelectionModel().getSelectedItem();
+		return cmbUser.getSelectionModel().getSelectedItem();
 	}
 
 	public String getPassword() {
@@ -159,7 +159,7 @@ public class LoginController {
 	}
 
 	private boolean handleLogin() {
-		String user = userComboBox.getValue();
+		String user = cmbUser.getValue();
 		String password = passwordField.getText();
 
 		if (user == null || password.isEmpty()) {
@@ -181,25 +181,25 @@ public class LoginController {
 
 	private boolean doValidate() {
 		SUB_Protect Protection = new SUB_Protect();
-		String userName = userComboBox.getValue();
+		String userName = cmbUser.getValue();
 		String userPass = passwordField.getText();
 
 		int index = getArrayListIndexByname(lstUsers, userName);
-			if (index < 0) {
-				// We're fscked...
-			}
-			boolean isAdmin = lstUsers.get(index).isAdmin();
-	
-			// This password comes encrypted:
-			String pass = lstUsers.get(index).getPassword();
+		if (index < 0) {
+			// We're fscked...
+		}
+		boolean isAdmin = lstUsers.get(index).isAdmin();
 
-			//Encrypt typed password to compare with encrypted one from DB:
-			String myEncString = Protection.getEncryptedString(userPass, AESSalt, SecKeyStr, IV);
+		// This password comes encrypted:
+		String pass = lstUsers.get(index).getPassword();
 
-			return ((myEncString.equals(pass)));
+		//Encrypt typed password to compare with encrypted one from DB:
+		String myEncString = Protection.getEncryptedString(userPass, AESSalt, SecKeyStr, IV);
+
+		return ((myEncString.equals(pass)));
 	}
 
-	private int  getArrayListIndexByname(ArrayList<TYP_ParamDLG_Login> lstCashiers, String MyName) {
+	private int getArrayListIndexByname(ArrayList<TYP_ParamDLG_Login> lstCashiers, String MyName) {
 		for (int i = 0; i < lstCashiers.size(); i++) {
 			if (lstCashiers.get(i).getName().equals(MyName)) {
 				return i;
@@ -212,6 +212,11 @@ public class LoginController {
 		// TODO: Implement a timer to clear this:
 		errorLabel.setText(message);
 		errorLabel.setVisible(true);
+	}
+
+	@FXML
+	private void cmbUserOnActionHandler(ActionEvent event) {
+		passwordField.requestFocus();
 	}
 
 }

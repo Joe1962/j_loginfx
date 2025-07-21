@@ -43,7 +43,7 @@
                         <Insets right="5.0" />
                      </GridPane.margin>
                   </Label>
-               <ComboBox fx:id="userComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Select user..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
+               <ComboBox fx:id="cmbUser" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#cmbUserOnActionHandler" promptText="Select user..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
          
                   <Label style="-fx-font-weight: bold;" text="Password:" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                      <GridPane.margin>
