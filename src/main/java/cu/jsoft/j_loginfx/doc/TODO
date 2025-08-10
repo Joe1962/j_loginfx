@@ -1,6 +1,13 @@
 j_loginfx TODO:
 
-TODO:
+
+TODO: 
 
 ********************************************************************************
+
+250629:
+DONE: implement check for uuid_ossp extension in sys_users table validation.
+DONE: After create superadmin dialog, login dialog does not have focus (was only an issue when running in IDE).
+250628:
+DONE: First user creation dialog must start with focus on first password field.
 
