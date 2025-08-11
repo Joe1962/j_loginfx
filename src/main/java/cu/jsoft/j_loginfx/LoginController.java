@@ -26,7 +26,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 
 public class LoginController {
-
 	private ArrayList<TYP_ParamDLG_Login> lstUsers = new ArrayList<>();
 	private Dialog dialog;
 	private String AESSalt;
@@ -55,6 +54,7 @@ public class LoginController {
 		}
 
 		// There are users, continuing on to login dialog:
+
 		// Get list of user names:
 		setUserList(loadUsers());
 
