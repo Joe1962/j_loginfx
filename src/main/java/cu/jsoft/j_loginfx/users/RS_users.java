@@ -4,10 +4,10 @@
  */
 package cu.jsoft.j_loginfx.users;
 
-import cu.jsoft.j_dbfxlite.RS;
-import cu.jsoft.j_utilsfxlite.global.FLAGS;
-import cu.jsoft.j_utilsfxlite.security.SUB_Protect;
-import static cu.jsoft.j_utilsfxlite.subs.SUB_UtilsNotifications.echoClassMethodComment;
+import cu.jsoft.j_dbfx.RS;
+import cu.jsoft.j_utilsfx.global.FLAGS;
+import cu.jsoft.j_utilsfx.security.SUB_Protect;
+import static cu.jsoft.j_utilsfx.subs.SUB_UtilsNotifications.echoClassMethodComment;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

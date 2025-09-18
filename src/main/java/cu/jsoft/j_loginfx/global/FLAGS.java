@@ -8,7 +8,7 @@ package cu.jsoft.j_loginfx.global;
  *
  * @author joe1962
  */
-public class FLAGS extends cu.jsoft.j_utilsfxlite.global.FLAGS {
+public class FLAGS extends cu.jsoft.j_utilsfx.global.FLAGS {
 	
 	private static boolean LOGGEDIN;
 

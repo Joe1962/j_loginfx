@@ -4,7 +4,7 @@
  */
 package cu.jsoft.j_loginfx.users;
 
-import cu.jsoft.j_utilsfxlite.security.SUB_Protect;
+import cu.jsoft.j_utilsfx.security.SUB_Protect;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

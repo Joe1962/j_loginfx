@@ -4,7 +4,7 @@
  */
 package cu.jsoft.j_loginfx;
 
-import static cu.jsoft.j_utilsfxlite.global.CONSTS.EMPTY_STRING;
+import static cu.jsoft.j_utilsfx.global.CONSTS.EMPTY_STRING;
 
 /**
  *

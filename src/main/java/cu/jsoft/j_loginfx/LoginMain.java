@@ -4,17 +4,17 @@
  */
 package cu.jsoft.j_loginfx;
 
-import cu.jsoft.j_dbfxlite.DBConnectionHandler;
-import cu.jsoft.j_dbfxlite.types.TYP_DBStructCheck;
+import cu.jsoft.j_dbfx.DBConnectionHandler;
+import cu.jsoft.j_dbfx.types.TYP_DBStructCheck;
 import cu.jsoft.j_loginfx.users.AdduserController;
 import cu.jsoft.j_loginfx.users.RS_users;
 import cu.jsoft.j_loginfx.users.TYP_user;
-import cu.jsoft.j_utilsfxlite.global.CONSTS;
-import static cu.jsoft.j_utilsfxlite.global.CONSTS.NEW_LINE;
-import static cu.jsoft.j_utilsfxlite.subs.SUB_PopupsFX.MsgErrorOKFX;
-import static cu.jsoft.j_utilsfxlite.subs.SUB_PopupsFX.MsgErrorYesNoFX;
-import static cu.jsoft.j_utilsfxlite.subs.SUB_PopupsFX.SimpleDialog;
-import static cu.jsoft.j_utilsfxlite.subs.SUB_UtilsFXResources.getResourceImage;
+import cu.jsoft.j_utilsfx.global.CONSTS;
+import static cu.jsoft.j_utilsfx.global.CONSTS.NEW_LINE;
+import static cu.jsoft.j_utilsfx.subs.SUB_PopupsFX.MsgErrorOKFX;
+import static cu.jsoft.j_utilsfx.subs.SUB_PopupsFX.MsgErrorYesNoFX;
+import static cu.jsoft.j_utilsfx.subs.SUB_PopupsFX.SimpleDialog;
+import static cu.jsoft.j_utilsfx.subs.SUB_UtilsFXResources.getResourceImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
