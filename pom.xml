@@ -7,16 +7,6 @@
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>j_utilsfx-lite</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>j_dbfx-lite</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
 			<version>21</version>
@@ -117,6 +107,16 @@
 			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>4.0.2</version>
 		</dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>j_dbfx</artifactId>
+	  <version>${project.version}</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>j_utilsfx</artifactId>
+	  <version>1.4.1</version>
+	 </dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
