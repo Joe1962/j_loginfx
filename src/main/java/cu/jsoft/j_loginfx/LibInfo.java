@@ -13,7 +13,7 @@ public class LibInfo {
 	// Lib constants:
 	private static final String TITLE = "jloginfx";
 	private static final String VERSION = "1.0.0";
-	private static final String BUILD = "250721.01";
+	private static final String BUILD = "250918.01";
 
 	/**
 	 * @return the TITLE

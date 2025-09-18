@@ -22,18 +22,20 @@ import java.util.UUID;
  *
  */
 public class RS_users extends RS {
-	String dbTable = "public.sys_users";
 	private UUID MyID;
 
 	public RS_users() {
 		super();
+
+		setDbTable("public.sys_users");
+
 		SQLSelectAll = "SELECT uuid, name, password, admin FROM public.sys_users ";
-		SQLSelectByPK = "SELECT uuid, name, password, admin FROM public.sys_users WHERE uuid = ? ";
+		SQLSelectByID = "SELECT uuid, name, password, admin FROM public.sys_users WHERE uuid = ? ";
 	}
 
 	public int CountUsers() throws SQLException {
 		String SQL = "SELECT COUNT(name) FROM DBTABLE;";
-		return Count(SQL, dbTable);
+		return Count(SQL, getDbTable());
 	}
 
 	public void selectByAdminState(boolean IsAdmin, String OrderByString) throws SQLException {
@@ -63,32 +65,6 @@ public class RS_users extends RS {
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public void selectByDate(String OrderByString, Object MyMaster) throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
-
-	@Override
-	public void selectByPK(Object MyPK) throws SQLException {
-		String QuerySQL = SQLSelectByPK;
-		PreparedStatement pstmt;
-		pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		pstmt.setObject(1, (UUID) MyPK);
-		setRST(getDBConnHandler().doQuery(pstmt));
-		getRST().first();
-		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
-	}
-
-	@Override
-	public void selectByMaster(String OrderByString, Object MyMaster) throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
-
-	@Override
-	public void selectByNameByActiveState(String MyName, String OrderByString, Object ActiveState) throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 
 	public void selectByName(String MyName) throws SQLException {
@@ -136,17 +112,6 @@ public class RS_users extends RS {
 	}
 
 	@Override
-	public int deleteRow() throws SQLException {
-		// Delete single record:
-		String QuerySQL = "DELETE FROM sys_users WHERE uuid = ? ";
-		PreparedStatement pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		int n = 1;
-		pstmt.setObject(n++, MyID);
-		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
-		return getDBConnHandler().doUpdate(pstmt);
-	}
-
-	@Override
 	public boolean updateRow(Object MyRow, Object WhereParam) throws SQLException {
 		SUB_Protect Protection = new SUB_Protect();
 		TYP_user MyRec = (TYP_user) MyRow;
@@ -161,37 +126,6 @@ public class RS_users extends RS {
 
 		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
 		return getDBConnHandler().doUpdate(pstmt) > 0;
-	}
-
-	@Override
-	public boolean deleteRowByID(int MyID) throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
-
-	@Override
-	public boolean deleteRowByID(String MyID) throws SQLException {
-		// Delete single record:
-		String QuerySQL = "DELETE FROM sys_users WHERE name = ? ";
-		PreparedStatement pstmt = getMyConn().prepareStatement(QuerySQL, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		int n = 1;
-		pstmt.setString(n++, MyID);
-		echoClassMethodComment(pstmt.toString(), FLAGS.isDEBUG(), false);			// DEBUG...
-		return getDBConnHandler().doUpdate(pstmt) > 0;
-	}
-
-	@Override
-	public int deleteRowByID(BigInteger MyID) throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
-
-	@Override
-	public int deleteRowsByZeroQuant() throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public int deleteByMaster() throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	public boolean isAdminByname(String MyName) throws SQLException {
@@ -223,5 +157,6 @@ public class RS_users extends RS {
 	public void setUserID(UUID MyUserID) {
 		this.MyID = MyUserID;
 	}
+
 
 }
