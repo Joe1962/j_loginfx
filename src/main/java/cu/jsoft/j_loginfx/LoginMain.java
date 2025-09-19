@@ -44,8 +44,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
-
 /**
  *
  * @author joe1962
