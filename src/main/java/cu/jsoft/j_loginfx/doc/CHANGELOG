@@ -1,0 +1,6 @@
+CHANGELOG j_loginfx:
+
+
+251221:
+	RS_users: change due to refactoring in j_dbfx.RS.
+
