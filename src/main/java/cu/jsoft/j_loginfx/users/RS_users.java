@@ -28,7 +28,7 @@ public class RS_users extends RS {
 
 		setDbTableName("sys_users");
 //		setDbTableFull(DBSchema + "." + "public.sys_users");
-		setDbTableFull("public" + "." + "public.sys_users");
+		setDbTableFull("public" + "." + getDbTableName());
 
 		SQLSelectAll = "SELECT uuid, name, password, admin FROM public.sys_users ";
 		SQLSelectByID = "SELECT uuid, name, password, admin FROM public.sys_users WHERE uuid = ? ";
