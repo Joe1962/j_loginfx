@@ -8,7 +8,6 @@ import cu.jsoft.j_dbfx.RS;
 import cu.jsoft.j_utilsfx.global.FLAGS;
 import cu.jsoft.j_utilsfx.security.SUB_Protect;
 import static cu.jsoft.j_utilsfx.subs.SUB_UtilsNotifications.echoClassMethodComment;
-import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +26,9 @@ public class RS_users extends RS {
 	public RS_users() {
 		super();
 
-		setDbTable("public.sys_users");
+		setDbTableName("sys_users");
+//		setDbTableFull(DBSchema + "." + "public.sys_users");
+		setDbTableFull("public" + "." + "public.sys_users");
 
 		SQLSelectAll = "SELECT uuid, name, password, admin FROM public.sys_users ";
 		SQLSelectByID = "SELECT uuid, name, password, admin FROM public.sys_users WHERE uuid = ? ";
@@ -35,7 +36,7 @@ public class RS_users extends RS {
 
 	public int CountUsers() throws SQLException {
 		String SQL = "SELECT COUNT(name) FROM DBTABLE;";
-		return Count(SQL, getDbTable());
+		return Count(SQL, getDbTableFull());
 	}
 
 	public void selectByAdminState(boolean IsAdmin, String OrderByString) throws SQLException {
